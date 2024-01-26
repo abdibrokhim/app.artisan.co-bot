@@ -122,6 +122,7 @@ class Artisan:
             
             totalLeads = len(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr/td[1]/div/p'))
             for k in range(1, totalLeads+1):
+                print('totalLeads: ', totalLeads)
                 utils.prYellow("🔄 Scraping lead: " + str(k))
 
                 time.sleep(2)
@@ -230,6 +231,13 @@ class Artisan:
                     utils.prRed("❌ Couldn't save data to backup csv file.")
                     print('This data: ', data)
 
+                if i > 1:
+                    utils.prYellow("🔄 Going Back to processing page...")
+                    time.sleep(2)
+                    for _ in range(0, i-1):
+                        self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[3]/div[1]/nav/ul/li[9]/button').click()
+                        time.sleep(6)
+                    time.sleep(6)
 
             utils.prYellow("🔄 Going to next page...")
             time.sleep(2)
@@ -270,6 +278,6 @@ class Artisan:
     
 
 start = time.time()
-Artisan().scrape_leads()
+Artisan()
 end = time.time()
 utils.prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")

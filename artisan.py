@@ -1,5 +1,5 @@
 import time,math,random,os
-import utils,constants,config
+import utils,config
 import pickle, hashlib
 
 from selenium import webdriver
@@ -26,7 +26,7 @@ class Artisan:
                     self.driver.find_element("xpath",'//*[@id="root"]/div/div[1]/div[2]/div/div/div/div/div[2]/div[1]/form/div/div/input').send_keys(config.email)
                     time.sleep(2)
                     self.driver.find_element("xpath",'//*[@id="root"]/div/div[1]/div[2]/div/div/div/div/div[2]/div[1]/form/div/button').click()
-                    time.sleep(200)
+                    time.sleep(50)
 
                     # let's fiil out OTP
                     # get input OTP
@@ -87,9 +87,11 @@ class Artisan:
         time.sleep(2)
         pass
 
-    
 
     def scrape_leads(self,):
+        utils.prGreen("✅ Opening leads tab...")
+        self.driver.get('https://app.artisan.co/leads')
+
         utils.prGreen("✅ Scraping leads...")
         time.sleep(2)
 
@@ -117,116 +119,123 @@ class Artisan:
         for i in range(1, int(tatolPages)+1):
             utils.prYellow("🔄 Scraping page: " + str(i))
             time.sleep(2)
-            leadNames.append(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[1]/div/p').text)
-            time.sleep(2)
-            leadEmails.append(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[2]/p').text)
-            time.sleep(2)
-            leadStatus.append(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[3]/p').text)
-            time.sleep(2)
-            leadCompany.append(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[4]/p').text)
-            time.sleep(2)
-            leadWorkflowStage.append(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[5]/p').text)
-            time.sleep(2)
             
-            lastContact = self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[6]/p').text if \
-                self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[6]/p').text else "-"
-            leadLastContact.append(lastContact)
-            time.sleep(2)
-            
-            utils.prYellow("🔄 Scraping individual leads info...")
-            self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]').click()
-            time.sleep(6)
-            
-            description = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[1]/p').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[1]/p').text else "-"
-            leadDescription.append(description)
-            time.sleep(2)
-            
-            website = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[1]/a/p').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[1]/a/p').text else "-"
-            leadWebsite.append(website)
-            time.sleep(2)
+            totalLeads = len(self.driver.find_elements(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr/td[1]/div/p'))
+            for k in range(1, totalLeads+1):
+                utils.prYellow("🔄 Scraping lead: " + str(k))
 
-            foundedYear = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[2]/h2[2]').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[2]/h2[2]').text else "-"
-            leadFoundedYear.append(foundedYear)
-            time.sleep(2)
-
-            industry = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[3]/h2[2]').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[3]/h2[2]').text else "-"
-            leadIndustry.append(industry)
-            time.sleep(2)
-
-            numberOfEmployees = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[4]/h2[2]').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[4]/h2[2]').text else "-"
-            leadNumberOfEmployees.append(numberOfEmployees)
-            time.sleep(2)
-
-            linkedin = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[1]/a[2]').text if \
-                self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[1]/a[2]').text else "-"
-            leadLinkedin.append(linkedin)
-            time.sleep(2)
-
-            emailOpens = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[2]/div[1]/h2[2]').text
-            leadEmailOpens.append(emailOpens)
-            time.sleep(2)
-
-            clicks = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[2]/div[2]/h2[2]').text
-            leadLinkClicks.append(clicks)
-            time.sleep(2)
-
-            location = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[3]/div[1]/h2[2]').text
-            leadLocation.append(location)
-            time.sleep(2)
-
-            localTime = self.driver.find_elements(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[3]/div[2]/h2[2]').text
-            leadLocalTime.append(localTime)
-            time.sleep(2)
-
-            utils.prYellow("🔄 Scraping individual leads info finished.")
-            time.sleep(2)
-
-            # go back to leads page
-            utils.prYellow("🔄 Going back to leads page...")
-            time.sleep(2)
-            self.driver.get('https://app.artisan.co/leads')
-            time.sleep(6)
-            j += 1
-
-            # save data to backup csv file
-            utils.prYellow("🔄 Saving data to backup csv file...")
-            data = {
-                'Name': leadNames[0],
-                'Email': leadEmails[0],
-                'Status': leadStatus[0],
-                'Company': leadCompany[0],
-                'Workflow Stage': leadWorkflowStage[0],
-                'Last Contact': leadLastContact[0],
-                'Industry': leadIndustry[0],
-                'Number of Employees': leadNumberOfEmployees[0],
-                'Linkedin': leadLinkedin[0],
-                'Email Opens': leadEmailOpens[0],
-                'Link Clicks': leadLinkClicks[0],
-                'Local Time': leadLocalTime[0],
-                'Location': leadLocation[0],
-                'Founded Year': leadFoundedYear[0],
-                'Website': leadWebsite[0],
-                'Description': leadDescription[0]
-            }
-            try:
-                backup_append_to_csv(config.backup_csv_path, data)
-                utils.prGreen("✅ Saved data to backup csv file.")
-            except:
-                utils.prRed("❌ Couldn't save data to backup csv file.")
-
-
-            if i == 10:
-                # click on next page button
-                utils.prYellow("🔄 Going to next page...")
                 time.sleep(2)
-                self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[3]/div[1]/nav/ul/li[9]/button').click()
-                j = 2
+                leadNames.append(self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[1]/div/p').text)
+                time.sleep(2)
+                leadEmails.append(self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[2]/p').text)
+                time.sleep(2)
+                leadStatus.append(self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[3]/p').text)
+                time.sleep(2)
+                leadCompany.append(self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[4]/p').text)
+                time.sleep(2)
+                leadWorkflowStage.append(self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[5]/p').text)
+                time.sleep(2)
+
+                lastContact = self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[6]/p').text if \
+                    self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]/td[6]/p').text else "-"
+                leadLastContact.append(lastContact)
+                time.sleep(2)
+                
+                utils.prYellow("🔄 Scraping individual leads info...")
+                self.driver.find_element(By.XPATH,f'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[2]/table/tbody/tr[{j}]').click()
                 time.sleep(6)
+                
+                description = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[1]/p').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[1]/p').text else "-"
+                leadDescription.append(description)
+                time.sleep(2)
+                
+                website = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[1]/a/p').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[1]/a/p').text else "-"
+                leadWebsite.append(website)
+                time.sleep(2)
+
+                foundedYear = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[2]/h2[2]').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[2]/div[2]/h2[2]').text else "-"
+                leadFoundedYear.append(foundedYear)
+                time.sleep(2)
+
+                industry = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[3]/h2[2]').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[3]/h2[2]').text else "-"
+                leadIndustry.append(industry)
+                time.sleep(2)
+
+                numberOfEmployees = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[4]/h2[2]').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[1]/div/div[4]/h2[2]').text else "-"
+                leadNumberOfEmployees.append(numberOfEmployees)
+                time.sleep(2)
+
+                linkedin = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[1]/a[2]').text if \
+                    self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[1]/a[2]').text else "-"
+                leadLinkedin.append(linkedin)
+                time.sleep(2)
+
+                emailOpens = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[2]/div[1]/h2[2]').text
+                leadEmailOpens.append(emailOpens)
+                time.sleep(2)
+
+                clicks = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[2]/div[2]/h2[2]').text
+                leadLinkClicks.append(clicks)
+                time.sleep(2)
+
+                location = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[3]/div[1]/h2[2]').text
+                leadLocation.append(location)
+                time.sleep(2)
+
+                localTime = self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div[3]/div/div[1]/div[2]/div[3]/div[2]/h2[2]').text
+                leadLocalTime.append(localTime)
+                time.sleep(2)
+
+                utils.prYellow("🔄 Scraping individual leads info finished.")
+                time.sleep(2)
+
+                # go back to leads page
+                utils.prYellow("🔄 Going back to leads page...")
+                time.sleep(2)
+                self.driver.get('https://app.artisan.co/leads')
+                time.sleep(6)
+                j += 1
+
+                # save data to backup csv file
+                utils.prYellow("🔄 Saving data to backup csv file...")
+                data = {
+                    'Name': [leadNames[-1]],
+                    'Email': [leadEmails[-1]],
+                    'Status': [leadStatus[-1]],
+                    'Company': [leadCompany[-1]],
+                    'Workflow Stage': [leadWorkflowStage[-1]],
+                    'Last Contact': [leadLastContact[-1]],
+                    'Industry': [leadIndustry[-1]],
+                    'Number of Employees': [leadNumberOfEmployees[-1]],
+                    'Linkedin': [leadLinkedin[-1]],
+                    'Email Opens': [leadEmailOpens[-1]],
+                    'Link Clicks': [leadLinkClicks[-1]],
+                    'Local Time': [leadLocalTime[-1]],
+                    'Location': [leadLocation[-1]],
+                    'Founded Year': [leadFoundedYear[-1]],
+                    'Website': [leadWebsite[-1]],
+                    'Description': [leadDescription[-1]]
+                }
+                print('data: ', data)
+                try:
+                    backup_append_to_csv(config.backup_csv_path, data)
+                    utils.prGreen("✅ Saved data to backup csv file.")
+                    print('This data: ', data)
+                except:
+                    utils.prRed("❌ Couldn't save data to backup csv file.")
+                    print('This data: ', data)
+
+
+            utils.prYellow("🔄 Going to next page...")
+            time.sleep(2)
+            self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[3]/div[1]/nav/ul/li[9]/button').click()
+            j = 2
+            time.sleep(6)
                 
 
 
@@ -258,7 +267,6 @@ class Artisan:
             utils.prRed("❌ Couldn't save data to csv file.")
 
         utils.prGreen("✅ Scraping finished successfully.")
-        pass
     
 
 start = time.time()

@@ -82,11 +82,11 @@ def append_to_csv(filename, data):
     print('writing finished...')
 
 # l = [1, 2, 3]
-data = {'Name': ['Jolien Langezaal', 'Jolien Langezaal'], 'Email': ['jolienlangezaal@pvh.com']}
+# data = {'Name': ['Jolien Langezaal', 'Jolien Langezaal'], 'Email': ['jolienlangezaal@pvh.com']}
 # print(l[-1])
 # Example usage
 # new_data = {
 #     'column1': list(l[-1]),
 #     'column2': ['A']
 # }
-backup_append_to_csv(config.backup_csv_path, data)
+# backup_append_to_csv(config.backup_csv_path, data)

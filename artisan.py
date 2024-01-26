@@ -116,7 +116,16 @@ class Artisan:
         print('tatolPages: ', tatolPages)
 
         j = 2
-        for i in range(1, int(tatolPages)+1):
+        n = int(input("Enter page number: "))
+
+        utils.prYellow("🔄 Going to processing page...")
+        time.sleep(2)
+        for _ in range(0, n-1):
+            self.driver.find_element(By.XPATH,'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/div[3]/div[1]/nav/ul/li[9]/button').click()
+            time.sleep(6)
+        time.sleep(6)
+
+        for i in range(n, int(tatolPages)+1):
             utils.prYellow("🔄 Scraping page: " + str(i))
             time.sleep(2)
             
